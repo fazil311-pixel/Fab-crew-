@@ -1,0 +1,229 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Faz Carrom Online</title>
+<style>
+:root{--bg:#4b2a7b;--fg:#ffffff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#2d1a4d;--fg:#ffffff}}
+:root[data-theme="dark"]{--bg:#2d1a4d;--fg:#ffffff}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,Arial,sans-serif;text-align:center}
+canvas{width:92vw;max-width:400px;height:auto;margin-top:12px;border-radius:8px;touch-action:none}
+input{width:80%;max-width:360px}
+p{margin:6px}
+button{font-size:14px;padding:6px 10px;margin:2px;border-radius:8px;border:0;background:rgba(255,255,255,0.2);color:#fff;cursor:pointer}
+button.on{background:#ffd60a;color:#000}
+#home{position:fixed;inset:0;z-index:20;overflow:auto;background:radial-gradient(circle at 50% 15%,#6b1420,#2a0a10 60%,#12040a);color:#fff;box-sizing:border-box;padding:12px 12px 90px}
+#home .top{display:flex;align-items:center;gap:10px;max-width:420px;margin:0 auto 6px;text-align:left}
+#home .av{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#ff7a66,#a01a10);border:3px solid #ffd9a0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:bold}
+.logo{font-size:38px;font-weight:900;margin:14px 0 18px;background:linear-gradient(#fff6c8,#e0a82a);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:1px}
+.coin{display:inline-block;width:.8em;height:.8em;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff7a66,#a01a10);border:3px solid #ffd9a0;vertical-align:-0.08em}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:420px;margin:0 auto}
+.tile{background:linear-gradient(160deg,#8a3a1e,#4a1a14);border:2px solid #c9893a;border-radius:12px;overflow:hidden}
+.tile .ic{font-size:56px;padding:18px 0}
+.tile .lb{background:#3a1d6e;font-weight:bold;padding:9px 2px;font-size:14px}
+#home .nav{position:fixed;left:0;right:0;bottom:0;background:#1c070c;border-top:2px solid #c9893a;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;gap:8px}
+#home .view{max-width:420px;margin:0 auto}
+#home input{font-size:16px;padding:8px;border-radius:8px;border:0;width:120px;background:#fff;color:#000}
+button.big{font-size:18px;padding:12px 18px;margin:6px}
+.frow{display:flex;gap:6px;align-items:center;justify-content:space-between;margin:6px 0;background:rgba(255,255,255,.08);padding:6px 8px;border-radius:8px;text-align:left}
+.mtiles{display:flex;gap:10px;justify-content:center;margin:8px 0}
+.mt{flex:0 0 120px;background:#26166d;border:2px solid #4a5fc0;border-radius:12px;padding:10px 4px;font-weight:bold;font-size:13px}
+.mt.sel{border-color:#ffd60a;background:#3b2a9a}
+.mt .ic{font-size:34px}
+.arenas{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding:10px 4px;-webkit-overflow-scrolling:touch}
+.acard{flex:0 0 76%;scroll-snap-align:center;background:linear-gradient(#3b2a9a,#26166d);border:3px solid #e8c89a;border-radius:18px;padding:12px;text-align:center;opacity:.75}
+.acard.sel{opacity:1;outline:3px solid #ffd60a}
+.acard .sky{font-size:64px}
+.acard .nm{font-size:30px;font-weight:900;margin:2px 0 8px;letter-spacing:1px}
+.acard .box{background:rgba(0,0,20,.45);border-radius:8px;padding:8px;margin:6px 0;font-weight:bold}
+.acard .prz{font-size:26px}
+.lobbar{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.lobbar button.on{background:#ffd60a;color:#000}
+.gcoin{display:inline-block;width:1.15em;height:1.15em;border-radius:50%;vertical-align:-0.2em;position:relative;background:radial-gradient(circle at 35% 30%,#fff3a8 0%,#ffd84d 35%,#e0a010 70%,#a86a00 100%);border:2px solid #b8790a;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35),0 1px 3px rgba(0,0,0,.6);box-sizing:border-box}
+.gcoin::after{content:"\2605";position:absolute;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:.62em;color:#9a5d00}
+.acard.lock{filter:saturate(.5)}
+.acard .lockmsg{color:#ffb3b3;font-size:13px;font-weight:bold;margin-top:4px}
+#home{background:linear-gradient(#5a1a12,#2a0a08 70%,#120403)}
+.hbar{display:flex;align-items:center;gap:8px;max-width:440px;margin:0 auto 8px;background:#6b4423;border-radius:12px;padding:8px}
+.hbar .av{width:42px;height:42px;font-size:20px}
+.ib{font-size:20px;padding:6px 10px}
+.pill{margin-left:auto;background:rgba(0,0,0,.35);border-radius:20px;padding:4px 6px 4px 10px;font-weight:bold;white-space:nowrap}
+.pill+.pill{margin-left:4px}
+.plus{background:#3fa535;color:#fff;border-radius:50%;padding:0;width:26px;height:26px;margin:0 0 0 4px;font-weight:bold}
+.gem{display:inline-block;width:1em;height:1em;background:linear-gradient(135deg,#9fd0ff,#2a6fe0);transform:rotate(45deg) scale(.8);border-radius:3px;vertical-align:-.1em;margin-right:2px}
+.row3{display:flex;gap:6px;max-width:440px;margin:0 auto}
+.hb{flex:1;background:linear-gradient(#d98a4a,#a85a24);color:#fff;border:2px solid #7a3d14;border-radius:10px;padding:8px 2px;font-weight:bold;font-size:13px;margin:0}
+.mode{display:block;width:88%;max-width:400px;margin:12px auto;padding:16px 10px;border:3px solid #c9893a;border-radius:12px;color:#fff;font-size:26px;font-weight:900;text-align:left;padding-left:24px;line-height:1.1}
+.mode.blue{background:linear-gradient(90deg,#1a3fb0,#2a5ad8)}
+.mode.green{background:linear-gradient(90deg,#1f7a46,#2f9a5a)}
+.mode.gold{background:linear-gradient(90deg,#d9891a,#f0b030)}
+.chests{display:flex;gap:6px;max-width:440px;margin:14px auto}
+.slot{flex:1;min-height:74px;background:rgba(0,0,0,.35);border:2px solid #6b2a1a;border-radius:10px;font-size:12px;padding:6px 2px;color:#d9a79a}
+.spinbtn{position:absolute;right:10px;top:150px;background:#7a1fa0;color:#fff;font-weight:900;border:3px solid #ffd24a;border-radius:50%;width:56px;height:56px;padding:0}
+#home .nav{gap:2px}
+#home .nav button{flex:1;margin:0;padding:8px 2px;font-size:12px}
+#wheel{width:220px;height:220px;border-radius:50%;margin:8px auto;border:6px solid #ffd24a;background:conic-gradient(#c0392b 0 45deg,#f1c40f 45deg 90deg,#2980b9 90deg 135deg,#27ae60 135deg 180deg,#8e44ad 180deg 225deg,#e67e22 225deg 270deg,#16a085 270deg 315deg,#d35400 315deg 360deg);transition:transform 3s cubic-bezier(.2,.8,.2,1)}
+.tg{min-width:64px}
+.tg.on{background:#3fa535}
+.skin{display:inline-block;width:34px;height:34px;border-radius:50%;border:2px solid #fff;vertical-align:middle;margin-right:8px}
+</style>
+</head>
+<body>
+<div id="banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:50;background:#ffd60a;color:#000;padding:12px;font-weight:bold;text-align:center"></div>
+<div id="home">
+<div id="v_home" class="view" style="max-width:460px;position:relative">
+<span id="meName" hidden></span><span id="meCode" hidden></span>
+<div class="hbar"><div class="av" id="av" onclick="openProfile()">F</div><button class="ib" onclick="showView('v_settings')">&#9881;</button>
+<span class="pill"><span class="gem"></span><span id="meGems">0</span><button class="plus" onclick="showView('v_shop')">+</button></span>
+<span class="pill"><span class="gcoin"></span> <span id="meCoins">0</span><button class="plus" onclick="showView('v_shop')">+</button></span></div>
+<div class="row3"><button class="hb" onclick="collectFree()">Free Rewards<br><small id="freeLbl">Collect Now!</small></button>
+<button class="hb" onclick="showView('v_lucky')">Lucky Shot</button>
+<button class="hb" onclick="showView('v_board')">Leaderboards</button></div>
+<button class="spinbtn" onclick="showView('v_spin')">SPIN</button>
+<div class="logo">FAZ CARR<span class="coin"></span>M</div>
+<button class="mode blue" onclick="startMode('disc')">Play<br>Disc Pool</button>
+<button class="mode green" onclick="startMode('carrom')">Play<br>Carrom</button>
+<button class="mode gold" onclick="startMode('free')">Play<br>Freestyle</button>
+<div class="chests" id="chests"></div>
+</div>
+<div id="v_friends" class="view" style="display:none">
+<h3>Friends</h3>
+<p style="font-size:14px">Your ID: <b id="meCode2"></b> <button onclick="copyCode()">Copy</button><br>Give your ID to a friend, and add their ID here.</p>
+<div><input id="fname" placeholder="Friend name"> <input id="fcode" placeholder="Friend ID" maxlength="6" style="width:100px"> <button onclick="addFriend()">Add</button></div>
+<div id="flist" style="margin-top:8px"></div>
+<p style="margin-bottom:0">Same phone:</p>
+<button class="big" onclick="playLocal('2p')">2 Players</button><button class="big" onclick="playLocal('4p')">4 Players</button>
+</div>
+<div id="v_online" class="view" style="display:none">
+<h3>Play online</h3>
+<button class="big" onclick="openOnlineCreate()">Create Room</button>
+<div style="margin-top:15px">
+  <input id="hcode" placeholder="4 digit code" maxlength="4" inputmode="numeric"> 
+  <button onclick="onlineJoin()">Join Room</button>
+</div>
+</div>
+<div id="v_chal" class="view" style="display:none">
+<h3>Challenges</h3>
+<button class="big" onclick="playCpu(160)">Freestyle 160 vs Computer</button><br>
+<button class="big" onclick="playCpu(210)">Freestyle 210 vs Computer</button>
+</div>
+<div id="v_settings" class="view" style="display:none"><h3>Settings</h3>
+<div class="frow"><span>Language</span><button onclick="alert('English only for now')">Change</button></div>
+<div id="cfgList"></div></div>
+<div id="v_spin" class="view" style="display:none"><h3>Daily Spin</h3><div style="font-size:30px;margin-bottom:-14px">&#9660;</div>
+<div id="wheel"></div><button class="big" onclick="doSpin()">SPIN</button><div id="spinLegend" style="font-size:13px"></div></div>
+<div id="v_lucky" class="view" style="display:none"><h3>Lucky Shot</h3><p>Pick one box. One free pick every day.</p>
+<button class="big" onclick="pickBox()">&#127873;</button><button class="big" onclick="pickBox()">&#127873;</button><button class="big" onclick="pickBox()">&#127873;</button></div>
+<div id="v_equip" class="view" style="display:none"><h3>Equipment</h3><p style="font-size:13px">Striker styles</p><div id="eqList"></div></div>
+<div id="v_events" class="view" style="display:none"><h3>Events</h3><div id="evList"></div></div>
+<div id="v_shop" class="view" style="display:none"><h3>Shop</h3><p style="font-size:13px">Swap gems for gold coins. No real money is used.</p><div id="shopList"></div></div>
+<div id="v_board" class="view" style="display:none"><h3>Leaderboards</h3><div id="boardList"></div>
+<p style="font-size:12px">A world ranking needs an online server. This list shows your results against your friends.</p></div>
+<div id="v_rules" class="view" style="display:none;text-align:left;font-size:15px;line-height:1.4">
+<button onclick="showView('v_lobby')">&#8592; Back</button>
+<h3>Rules</h3>
+<b>Black &amp; White</b>
+<ul style="padding-left:18px;margin:4px 0">
+<li>9 white, 9 black and the red queen. Player 1 plays white, Player 2 plays black.</li>
+<li>Pocket one of your coins and you shoot again. A coin of the other colour counts for the other player and ends your turn.</li>
+<li>Queen: pocket it, then cover it by pocketing one of your coins in the same shot or the next one. If you fail, the queen goes back to the centre.</li>
+<li>Foul (your striker goes in a pocket): your turn ends, the coins from that shot go back, and one of your pocketed coins goes back too. If you have none, you owe it.</li>
+<li>Your last coin before the queen is covered is a foul: it goes back with one more coin.</li>
+<li>You win when all 9 of your coins are pocketed and the queen is covered.</li>
+</ul>
+<b>Freestyle</b>
+<ul style="padding-left:18px;margin:4px 0">
+<li>Any coin counts for the player who pockets it: white 20, black 10, queen 50 (the queen must be covered by any coin).</li>
+<li>First to the target points wins.</li>
+</ul>
+<b>No Queen</b>: the red coin is removed.
+</div>
+<div id="v_lobby" class="view" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center"><button onclick="showView('v_home')">&#8592; Back</button><button onclick="showView('v_rules')">?</button><button onclick="showView('v_online')">Join</button><button onclick="freeCoins()">Free coins</button><b><span class="gcoin"></span> <span id="lobCoins">0</span></b></div>
+<div class="mtiles">
+<div class="mt" id="lt_bw" onclick="pickType('bw')"><div class="ic">&#9898;&#9899;</div>BLACK &amp; WHITE</div>
+<div class="mt" id="lt_free" onclick="pickType('free')"><div class="ic">&#127775;</div>FREESTYLE</div>
+</div>
+<div class="arenas" id="arenas"></div>
+<div class="lobbar">
+<span><button id="lm_cpu" class="on" onclick="pickOpp('cpu')">vs Computer</button><button id="lm_on" onclick="pickOpp('online')">Online</button></span>
+<span><button id="q_no" onclick="pickQueen(false)">No Queen</button><button id="q_yes" class="on" onclick="pickQueen(true)">Carrom</button></span>
+<button class="big" onclick="lobbyPlay()">PLAY</button>
+</div>
+</div>
+<div id="v_profile" class="view" style="display:none">
+<div class="top"><div class="av" id="pav">F</div><div><b id="pName"></b> <button onclick="editName()">Edit</button><br><small>ID: <span id="pCode"></span></small></div><div style="margin-left:auto;font-weight:bold;font-size:18px"><span class="gcoin"></span> <span id="pCoins">0</span></div></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0;text-align:center">
+<div class="frow" style="display:block"><b id="st_g">0</b><br><small>Games</small></div>
+<div class="frow" style="display:block"><b id="st_w">0</b><br><small>Wins</small></div>
+<div class="frow" style="display:block"><b id="st_l">0</b><br><small>Losses</small></div>
+<div class="frow" style="display:block"><b id="st_p">0%</b><br><small>Win rate</small></div>
+</div>
+<div id="st_modes" style="font-size:14px;margin-bottom:8px;text-align:left"></div>
+<h4 style="margin:10px 0 4px;text-align:left">Played with</h4><div id="pOpp"></div>
+<h4 style="margin:10px 0 4px;text-align:left">Friends (<span id="pFc">0</span>)</h4><div id="pFr"></div>
+<h4 style="margin:10px 0 4px;text-align:left">Recent matches</h4><div id="pLog"></div>
+<h4 style="margin:10px 0 4px;text-align:left">Backup</h4>
+<textarea id="bk" rows="3" style="width:95%;font-size:12px"></textarea><br>
+<button onclick="doBackup()">Show backup</button> <button onclick="doRestore()">Restore</button>
+<p style="font-size:12px">Your coins, friends and stats are saved on this phone. Make a backup before you clear Safari data.</p>
+</div>
+<div class="nav">
+<button onclick="showView('v_home')">Home</button>
+<button onclick="showView('v_friends')">Friends</button>
+<button onclick="showView('v_equip')">Equipment</button>
+<button onclick="showView('v_events')">Events</button>
+<button onclick="showView('v_shop')">Shop</button>
+</div>
+</div>
+<div id="game" style="display:none">
+<h3>Faz Carrom</h3>
+<div style="margin:4px">
+<div id="ctl" style="display:none">
+<button id="m_cpu" onclick="startGame('cpu')">vs Computer</button>
+<button id="m_2p" onclick="startGame('2p')">2 Players</button>
+<button id="m_4p" onclick="startGame('4p')">4 Players</button><br>
+<button id="t_0" onclick="setTarget(0)">Classic</button>
+<button id="t_160" onclick="setTarget(160)">Freestyle 160</button>
+<button id="t_210" onclick="setTarget(210)">Freestyle 210</button><br>
+<div style="margin:4px"><button onclick="createRoom()">Create room</button>
+<input id="code" placeholder="code" maxlength="4" inputmode="numeric" style="width:70px;font-size:16px;padding:6px">
+<button onclick="joinRoom()">Join</button></div>
+</div>
+<p id="net" style="font-size:13px"></p>
+<div id="addf" style="display:none"><button id="addfbtn" onclick="addPeerFriend()"></button></div>
+<button onclick="toggleBar()">&#9776; Menu</button>
+<div id="bar" style="display:none">
+<button onclick="soundOn=!soundOn;this.innerText='Sound: '+(soundOn?'ON':'OFF');unlockAudio()">Sound: ON</button>
+<button onclick="restartGame()">Restart</button>
+<button onclick="stopGame()">Stop</button>
+<button onclick="goHome()">Home</button>
+</div>
+</div>
+<canvas id="c" width="400" height="400"></canvas>
+<input id="s" type="range" min="90" max="310" value="200">
+<p id="score">White 0/9 | Black 0/9 | Turn: White</p>
+<audio id="remoteAudio" autoplay playsinline></audio>
+<div id="chat" style="display:none;margin:8px auto"><button id="callbtn" onclick="callBtn()">Call</button></div>
+</div>
+<script>
+var canvas = document.getElementById("c");
+var ctx = canvas.getContext("2d");
+var slider = document.getElementById("s");
+var strikerX = 200;
+var striker = {x: 200, y: 332, vx: 0, vy: 0, r: 13.5, m: 2};
+var coins = [{x: 200, y: 200, vx: 0, vy: 0, r: 12.35, m: 1, color: "#d62828"}];
+var pockets = [[17, 17], [383, 17], [17, 383], [383, 383]];
+var moving = false, aiming = false, aimX = 200, aimY = 200, score = 0;
+var foul = false, shotCoins = [];
+var turn = 0, counts = [0, 0], gameOver = false, mode = "2p", sides = [0, 2], cpuBusy = false;
+var target = 0, scores = [0, 0, 0, 0], winnerName = "";
+var net = {id: Math.random().toString(36).slice(2, 8), topic: "", es: null, me: 0, on: false, pending: null, shots: 0, jt: null};
+var shooter = 0, flipped = false, winIdx = -1;
+var queenState = 0, queenCoin = null, owed = [0, 0];
+var perSide = 9, queenOn = true, arenaFee = 0, arenaPrize = 0, arenaName = "";
+var soundOn = true, actx = null, lastTick = 0;
+
+var hitData = "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
